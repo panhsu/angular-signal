@@ -1,0 +1,44 @@
+<mat-stepper linear [selectedIndex]="activeStep()">
+  <mat-step *ngFor="let step of steps()" [stepControl]="step.form">
+    <ng-template matStepLabel>{{ step.label }}</ng-template>
+
+    <!-- Step1 -->
+    <div *ngIf="step.id === 'basic'">
+      <ul>
+        <li *ngFor="let node of treeSig()">
+          <input type="checkbox" [checked]="node.checked" (change)="toggleNode(node.id)" />
+          {{ node.label }}
+          <ul *ngIf="node.children">
+            <li *ngFor="let child of node.children">
+              <input type="checkbox" [checked]="child.checked" (change)="toggleNode(child.id)" />
+              {{ child.label }}
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Step2/Step3 -->
+    <form *ngIf="step.id !== 'basic' && step.id !== 'confirm'" [formGroup]="step.form">
+      <div *ngFor="let ctrl of step.form.controls | keyvalue">
+        <label>{{ ctrl.key }}</label>
+        <input [formControlName]="ctrl.key" [readonly]="ctrl.key === 'parentNodes'" />
+      </div>
+    </form>
+
+    <!-- Step4 confirm -->
+    <div *ngIf="step.id === 'confirm'">
+      <h3>確認送出內容</h3>
+      <p><strong>Step1 勾選父節點:</strong> {{ form2.controls.parentNodes.value }}</p>
+      <p><strong>Step2 資料:</strong></p>
+      <pre>{{ form2.value | json }}</pre>
+      <p><strong>Step3 資料:</strong></p>
+      <pre>{{ form3.value | json }}</pre>
+    </div>
+
+    <div class="step-buttons">
+      <button mat-button (click)="prevStep()" [disabled]="activeStep() === 0">上一步</button>
+      <button mat-button (click)="nextStep()" [disabled]="step.form.invalid && step.id !== 'confirm'">下一步</button>
+    </div>
+  </mat-step>
+</mat-stepper>
