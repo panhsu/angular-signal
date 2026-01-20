@@ -1,0 +1,55 @@
+<mat-stepper linear>
+  <mat-step>
+    <ng-template matStepLabel>tree</ng-template>
+
+    @if (wizard.loading()) {
+      <p>載入中...</p>
+    }
+
+    @if (wizard.error()) {
+      <p style="color: red">{{ wizard.error() }}</p>
+    }
+
+    @if (!wizard.loading() && !wizard.error()) {
+      <mat-tree [dataSource]="dataSource()" [treeControl]="treeControl">
+        <!-- expandable node -->
+        <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+          <div class="mat-tree-node">
+            <!-- toggle button -->
+            <button mat-icon-button matTreeNodeToggle>
+              <mat-icon>
+                {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+              </mat-icon>
+            </button>
+
+            <!-- checkbox -->
+            <mat-checkbox
+              [checked]="isChecked(node)"
+              (change)="toggleNode(node)"
+            >
+              <!-- folder icon 放在 checkbox 後 -->
+              <mat-icon style="margin-left: 2px">folder</mat-icon>
+
+              {{ node.name }}
+            </mat-checkbox>
+          </div>
+
+          <!-- children -->
+          <div [class.tree-children-hidden]="!treeControl.isExpanded(node)" class="tree-children">
+            <ng-container matTreeNodeOutlet></ng-container>
+          </div>
+        </mat-nested-tree-node>
+
+        <!-- leaf node -->
+        <mat-tree-node *matTreeNodeDef="let node">
+          <mat-checkbox [checked]="wizard.selectedIds().has(node.id)" (change)="toggleNode(node)">
+            {{ node.name }}
+          </mat-checkbox>
+        </mat-tree-node>
+      </mat-tree>
+    }
+  </mat-step>
+  <mat-step></mat-step>
+  <mat-step></mat-step>
+  <mat-step></mat-step>
+</mat-stepper>
