@@ -1,0 +1,23 @@
+<mat-form-field appearance="outline" style="width:300px">
+  <mat-label>Select Item</mat-label>
+
+  <input
+    matInput
+    [value]="search()"
+    (input)="search.set($any($event.target).value)"
+    [matAutocomplete]="auto"
+  />
+
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (item of flatData(); track item.id) {
+      <mat-option
+        [disabled]="isGreen(item)"
+        (onSelectionChange)="selectOption(item)"
+      >
+        <span [style.padding-left.px]="item.level * 16">
+          {{ item.label }}
+        </span>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>
